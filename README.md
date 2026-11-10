@@ -1,5 +1,11 @@
 # Car Price Regression Analysis
 
+## View the Complete Analysis
+
+[View Car Price Analysis Report](https://ihuomastar.github.io/car-price-regression-analysis/car_price_analysis.html)
+
+Explore the statistical analysis, regression results, model diagnostics, and visualizations.
+
 ## Project Overview
 
 This project examines the relationship between automobile characteristics and vehicle prices using statistical analysis and multiple linear regression in R.
