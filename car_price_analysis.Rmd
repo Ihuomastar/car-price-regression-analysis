@@ -1,0 +1,282 @@
+---
+title: "Car Price Regression Analysis"
+author: "Ihuoma Ilechukwu"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Data Preprocessing
+
+```{r}
+library(readxl)
+
+carprice <- read_excel("Data/Car Price.xlsx")
+
+head(carprice)
+```
+```{r}
+# Check for missing values
+colSums(is.na(carprice))
+
+# Remove rows with missing values
+carprice <- na.omit(carprice)
+
+# Confirm missing values have been removed
+colSums(is.na(carprice))
+
+# Check number of observations after preprocessing
+dim(carprice)
+```
+The dataset contains 205 observations and 25 variables. No missing values were identified; therefore, all 205 observations were retained for the analysis.
+
+
+## 2. Hypothesis Test for Average Car Price
+
+```{r}
+mean(carprice$price)
+
+t.test(carprice$price,
+       mu = 13000,
+       alternative = "less")
+```
+The mean car price is $13,276.71. A one-sample t-test was conducted to investigate whether the average car price is less than $13,000. The test produced a p-value of 0.6898. Since the p-value is greater than 0.05, we fail to reject the null hypothesis. Therefore, there is insufficient evidence to conclude that the average car price is less than $13,000.
+
+## 3. Hypothesis Test for Proportion of Two-Door Cars
+
+```{r}
+table(carprice$doornumber)
+
+two_door <- sum(carprice$doornumber == "two")
+total_cars <- nrow(carprice)
+
+two_door
+total_cars
+two_door / total_cars
+
+prop.test(two_door,
+          total_cars,
+          p = 0.20,
+          alternative = "less",
+          correct = FALSE)
+```
+Of the 205 cars, 90 have two doors, which is approximately 43.9% of the sample. A one-sample proportion test was conducted to investigate whether less than 20% of the cars have two doors. The test produced a p-value of 1.00. Since the p-value is greater than 0.05, we fail to reject the null hypothesis. Therefore, there is insufficient evidence to conclude that less than 20% of the cars have only two doors.
+
+## 4. 99% Confidence Interval for Average Car Price
+
+```{r}
+t.test(carprice$price, conf.level = 0.99)$conf.int
+```
+The 99% confidence interval for the population mean car price is $11,825.92 to $14,727.50.
+
+## 5. Linearity of Numerical Explanatory Variables with Price
+
+```{r}
+# Identify numerical variables
+names(carprice)[sapply(carprice, is.numeric)]
+```
+```{r}
+library(ggplot2)
+
+ggplot(carprice, aes(x = symboling, y = price)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm") +
+  labs(x = "symboling", y = "price")
+```
+The scatterplot shows a weak negative linear relationship between symboling and price. The observations are widely scattered around the fitted line, indicating that symboling alone has a weak linear association with car price.
+
+```{r}
+ggplot(carprice, aes(x = wheelbase, y = price)) +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm") +
+  labs(x = "wheelbase", y = "price")
+```
+The scatterplot shows a moderate positive linear relationship between wheelbase and price. As wheelbase increases, car price generally tends to increase, although there is some variability around the fitted line.
+
+```{r}
+ggplot(carprice, aes(x = carlength, y = price)) +
+  geom_point(color = "orange") +
+  geom_smooth(method = "lm") +
+  labs(x = "carlength", y = "price")
+```
+The scatterplot shows a moderately strong positive linear relationship between carlength and price. As car length increases, car price generally increases, although some variability is present around the fitted line.
+
+```{r}
+ggplot(carprice, aes(x = carwidth, y = price)) +
+  geom_point(color = "purple") +
+  geom_smooth(method = "lm") +
+  labs(x = "carwidth", y = "price")
+```
+The scatterplot shows a strong positive linear relationship between carwidth and price. As car width increases, car price generally increases, although some variability is present around the fitted line.
+
+```{r}
+ggplot(carprice, aes(x = carheight, y = price)) +
+  geom_point(color = "red") +
+  geom_smooth(method = "lm") +
+  labs(x = "carheight", y = "price")
+```
+The scatterplot shows a weak positive linear relationship between carheight and price. The observations are widely scattered around the fitted line, indicating that carheight has only a weak linear association with car price.
+
+```{r}
+ggplot(carprice, aes(x = curbweight, y = price)) +
+  geom_point(color = "brown") +
+  geom_smooth(method = "lm") +
+  labs(x = "curbweight", y = "price")
+```
+The scatterplot shows a strong positive linear relationship between curbweight and price. As curb weight increases, car price generally increases, with most observations following the fitted linear trend.
+
+```{r}
+ggplot(carprice, aes(x = enginesize, y = price)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm") +
+  labs(x = "enginesize", y = "price")
+```
+The scatterplot shows a strong positive linear relationship between enginesize and price. As engine size increases, car price generally increases, with most observations following the fitted linear trend.
+
+```{r}
+ggplot(carprice, aes(x = boreratio, y = price)) +
+  geom_point(color = "orange") +
+  geom_smooth(method = "lm") +
+  labs(x = "boreratio", y = "price")
+```
+The scatterplot shows a moderate positive linear relationship between boreratio and price. As bore ratio increases, car price generally tends to increase, although there is considerable variability around the fitted line.
+
+```{r}
+ggplot(carprice, aes(x = stroke, y = price)) +
+  geom_point(color = "purple") +
+  geom_smooth(method = "lm") +
+  labs(x = "stroke", y = "price")
+```
+The scatterplot shows a weak positive linear relationship between stroke and price. Although the regression line slopes slightly upward, the observations are widely scattered around the line, indicating that stroke alone is not a strong predictor of car price.
+
+```{r}
+ggplot(carprice, aes(x = compressionratio, y = price)) +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm") +
+  labs(x = "compressionratio", y = "price")
+```
+The scatterplot shows a weak positive linear relationship between compression ratio and price. The regression line has only a slight upward slope, while the observations are widely scattered, indicating that compression ratio alone is not a strong predictor of car price.
+
+```{r}
+ggplot(carprice, aes(x = horsepower, y = price)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm") +
+  labs(x = "horsepower", y = "price")
+```
+The scatterplot shows a strong positive linear relationship between horsepower and price. As horsepower increases, the price of the car generally increases. Therefore, horsepower appears to be a strong predictor of car price.
+
+```{r}
+ggplot(carprice, aes(x = peakrpm, y = price)) +
+  geom_point(color = "red") +
+  geom_smooth(method = "lm") +
+  labs(x = "peakrpm", y = "price")
+```
+The scatterplot shows a weak negative linear relationship between peak RPM and price. The observations are widely scattered around the regression line, indicating that peak RPM alone is not a strong predictor of car price.
+
+```{r}
+ggplot(carprice, aes(x = citympg, y = price)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm") +
+  labs(x = "citympg", y = "price")
+```
+The scatterplot shows a strong negative linear relationship between city MPG and price. As city MPG increases, car price generally decreases. Therefore, city MPG appears to be an important predictor of car price.
+
+```{r}
+ggplot(carprice, aes(x = highwaympg, y = price)) +
+  geom_point(color = "green") +
+  geom_smooth(method = "lm") +
+  labs(x = "highwaympg", y = "price")
+```
+The scatterplot shows a strong negative linear relationship between highway MPG and price. As highway MPG increases, car price generally decreases. Therefore, highway MPG appears to be an important predictor of car price.
+
+Overall, the numerical explanatory variables show different degrees of linear relationship with price. Car width, curb weight, engine size, and horsepower show strong positive relationships with price, while city MPG and highway MPG show strong negative relationships. Wheelbase, car length, and bore ratio show positive relationships of varying strength. In contrast, symboling, car height, stroke, compression ratio, and peak RPM show relatively weak linear relationships with price. Therefore, some numerical EVs appear to be considerably stronger predictors of car price than others.
+
+## 6. Correlation Matrix
+
+```{r}
+numeric_data <- carprice[sapply(carprice, is.numeric)]
+
+cor_matrix <- cor(numeric_data)
+
+round(cor_matrix, 2)
+```
+The correlation matrix shows that engine size (r = 0.87), curb weight (r = 0.84), horsepower (r = 0.81), and car width (r = 0.76) have strong positive correlations with price. City MPG (r = -0.69) and highway MPG (r = -0.70) have relatively strong negative correlations with price. In contrast, symboling, stroke, compression ratio, peak RPM, and car height have weak correlations with price. The matrix also shows strong correlations among some explanatory variables, such as city MPG and highway MPG (r = 0.97), which may indicate multicollinearity.
+
+## 7. Multiple Linear Regression Model
+
+```{r}
+model1 <- lm(price ~ . - CarName, data = carprice)
+
+summary(model1)
+```
+```{r}
+model_final <- step(model1, direction = "backward")
+
+summary(model_final)
+```
+```{r}
+alias(model_final)
+```
+```{r}
+library(car)
+model_vif <- update(model_final, . ~ . - enginetype)
+
+vif(model_vif)
+```
+```{r}
+model_vif2 <- update(model_vif, . ~ . - enginesize)
+
+vif(model_vif2)
+```
+```{r}
+model_vif3 <- update(model_vif2, . ~ . - curbweight)
+
+vif(model_vif3)
+```
+```{r}
+model_final <- model_vif3
+
+summary(model_final)
+```
+The regression model was initially selected using backward stepwise selection based on AIC. The model was then evaluated for multicollinearity using VIF. Variables with VIF values greater than 5 were removed sequentially until the remaining predictors had acceptable VIF values. The final model includes aspiration, car body, drive wheel, engine location, car width, car height, cylinder number, bore ratio, stroke, peak RPM, and highway MPG. The final model is statistically significant (p < 0.001) and explains approximately 87.63% of the variation in car price (R² = 0.8763; adjusted R² = 0.8629).
+
+## 8a. Statistical test - Shapiro-Wilk normality test
+
+```{r}
+shapiro.test(residuals(model_final))
+```
+The Shapiro-Wilk test produced a p-value of 1.144e-09, which is less than 0.05. Therefore, the null hypothesis of normality is rejected, indicating that the residuals of the final model are not normally distributed.
+
+## 8b. Graphical representation - Normal Q-Q Plot
+
+```{r}
+qqnorm(residuals(model_final))
+qqline(residuals(model_final), col = "red")
+```
+The Q-Q plot shows noticeable deviations from the reference line, particularly in the tails. This supports the Shapiro-Wilk test result and indicates that the residuals are not normally distributed.
+
+```{r}
+library(lmtest)
+
+bptest(model_final)
+```
+The Breusch-Pagan test produced a p-value of 3.318e-05, which is less than 0.05. Therefore, the null hypothesis of constant variance is rejected. This indicates that heteroscedasticity is present in the final regression model, meaning that the variance of the residuals is not constant.
+
+```{r}
+plot(model_final$fitted.values,
+     residuals(model_final),
+     xlab = "Fitted Values",
+     ylab = "Residuals",
+     main = "Residuals vs Fitted Values")
+
+abline(h = 0, col = "red")
+```
+The Residuals vs. Fitted Values plot shows that the spread of the residuals is not constant across the range of fitted values, with greater variability occurring at some higher fitted values. This supports the Breusch-Pagan test result (p = 3.318e-05). Therefore, the evidence suggests heteroscedasticity, indicating that the constant variance assumption is violated.
+
+
+
+
+
